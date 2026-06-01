@@ -65,26 +65,37 @@ results in:
 
 Restart Claude Desktop to load it.
 
-### Cowork (remote / HTTP transport)
+### Cowork (HTTP transport)
 
-Cowork doesn't load hand-edited `mcpServers` config and may run agents in a
-sandboxed VM, so it expects a connector reached over a **URL**. Run the server
-in HTTP mode and add it as a custom connector.
+Cowork doesn't load hand-edited `mcpServers` config, so instead of a spawned
+stdio process it connects to a running server over a **URL**. Run the server in
+HTTP mode and add it as a custom connector.
 
-1. Start the server (keep it running — unlike stdio, it isn't auto-spawned):
+1. **Start the server** in HTTP mode and leave it running (unlike stdio, it
+   isn't auto-spawned — it must already be up when Cowork connects):
    ```sh
    uv run server.py --http
    ```
-   It listens at `http://127.0.0.1:9090/mcp`. Override with `REDDIT_MCP_HOST`
-   / `REDDIT_MCP_PORT`.
-2. In Cowork, add a custom MCP connector pointing at that URL.
+   It listens at `http://127.0.0.1:9090/mcp`. (Override host/port with the
+   `REDDIT_MCP_HOST` / `REDDIT_MCP_PORT` env vars.)
 
-> **If Cowork can't reach `127.0.0.1`** (its sandbox has its own localhost),
-> bind to all interfaces and use your machine's IP instead:
+2. **Add the connector in Cowork** → add a custom MCP server by URL:
+   ```
+   http://127.0.0.1:9090/mcp
+   ```
+   The Reddit tools should then be available in your Cowork session.
+
+> **If the connector can't reach `127.0.0.1`** — some sandboxes have their own
+> `localhost` — bind to all interfaces and use your machine's LAN IP instead:
 > ```sh
 > REDDIT_MCP_HOST=0.0.0.0 uv run server.py --http
 > ```
-> then point Cowork at `http://<your-host-ip>:9090/mcp`.
+> then point Cowork at `http://<your-machine-ip>:9090/mcp`.
+
+**Keeping it running:** the HTTP server only works while the process is alive.
+For occasional use, just run the command in a terminal you leave open. To have
+it always available, run it as a background service (e.g. a macOS `launchd`
+agent).
 
 The same HTTP endpoint also works for Claude Code:
 ```sh
