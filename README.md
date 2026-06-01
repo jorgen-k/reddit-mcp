@@ -44,13 +44,12 @@ claude mcp add reddit -s user -- uv --directory "$(pwd)" run server.py
 Verify with `claude mcp list` (should show `reddit: ✓ Connected`). If Claude
 can't find `uv`, use its absolute path (`which uv`) instead of bare `uv`.
 
-### Claude Desktop
+### Claude Desktop & Cowork
 
-Add this under the top-level `"mcpServers"` key in your
-`claude_desktop_config.json` (macOS:
-`~/Library/Application Support/Claude/`). Use **absolute paths** — Desktop
-doesn't inherit your shell `PATH`, so run `which uv` and `pwd` and paste the
-results in:
+Both use the same config file:
+`~/Library/Application Support/Claude/claude_desktop_config.json`. Add a
+`mcpServers` entry using **absolute paths** — the app doesn't inherit your shell
+`PATH`. Get the values with `which uv` and `pwd`:
 
 ```json
 {
@@ -63,29 +62,34 @@ results in:
 }
 ```
 
-Restart Claude Desktop to load it.
+If the file already has other top-level keys, add `mcpServers` alongside them —
+don't overwrite the file.
 
-### Cowork (install the plugin)
+Then:
 
-Cowork's **Custom Connectors are dialed from Anthropic's cloud**, so a
-`localhost` URL can never reach a server on your machine — no tunnel or cert
-fixes that. The supported way to run a *local* MCP server in Cowork is a
-**plugin** that runs on-device.
+1. **Fully quit the app** — `Cmd+Q`, not just closing the window. The running
+   app rewrites this file, so an edit made while it's open can be discarded.
+2. **Relaunch.** It may take a couple of restarts before the server registers.
+3. **Grant permission** when the app prompts to run the server.
 
-Install the prebuilt plugin:
+The Reddit tools then appear in the app.
 
-1. Grab **`reddit-mcp.plugin`** from this repo (it bundles the stdio server).
-2. Open it with Cowork / install it from Cowork's plugins UI and accept it.
+> **Don't use a Custom Connector** (the "add server by URL" option) for a local
+> server — those are dialed from Anthropic's cloud and can't reach `localhost`,
+> no matter the cert or tunnel. The config-file method above spawns the server
+> locally on your machine, which is what works.
 
-`uv` must be installed and on your `PATH`. If Cowork can't find it, edit the
-plugin's `.mcp.json` and replace `"uv"` with the absolute path from `which uv`.
+### Optional: one-click plugin
 
-> The plugin source lives in [`plugin/reddit-mcp/`](plugin/reddit-mcp/). Rebuild
-> the `.plugin` with:
-> ```sh
-> cd plugin/reddit-mcp && zip -rq ../../reddit-mcp.plugin . \
->   -x ".venv/*" "__pycache__/*" "*.pyc" "uv.lock"
-> ```
+Instead of editing config, you can install the bundled plugin: grab
+**`reddit-mcp.plugin`** and open/install it from the app's plugins UI (same
+stdio server, packaged). Source lives in
+[`plugin/reddit-mcp/`](plugin/reddit-mcp/); rebuild it with:
+
+```sh
+cd plugin/reddit-mcp && zip -rq ../../reddit-mcp.plugin . \
+  -x ".venv/*" "__pycache__/*" "*.pyc" "uv.lock"
+```
 
 ## Notes
 
