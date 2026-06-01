@@ -79,21 +79,24 @@ The Reddit tools then appear in the app.
 > no matter the cert or tunnel. The config-file method above spawns the server
 > locally on your machine, which is what works.
 
-### Optional: one-click plugin
-
-Instead of editing config, you can install the bundled plugin: grab
-**`reddit-mcp.plugin`** and open/install it from the app's plugins UI (same
-stdio server, packaged). Source lives in
-[`plugin/reddit-mcp/`](plugin/reddit-mcp/); rebuild it with:
-
-```sh
-cd plugin/reddit-mcp && zip -rq ../../reddit-mcp.plugin . \
-  -x ".venv/*" "__pycache__/*" "*.pyc" "uv.lock"
-```
-
 ## Notes
 
 - Read-only, public content only.
 - No scores/vote counts/comment counts (RSS limitation). For those you'd need
   Reddit's Data API, which now requires a moderation use case + approval.
 - Be considerate with request volume — these are public feeds.
+
+### Search is only as good as Reddit's search
+
+`search_reddit` uses Reddit's own search engine — RSS is just the output format,
+so results are identical to the website/API search, not a separate (weaker)
+index. That engine has real limits:
+
+- **It doesn't search comment text** — only post titles and bodies (and
+  community names). A term that only appears in a comment won't be found.
+- **Very new posts lag** — search indexing isn't instant. To catch brand-new
+  posts reliably, use `browse_subreddit(sort="new")` instead of search.
+- **It isn't exhaustive** — low-relevance results get dropped or buried.
+
+So a "no results" means *"Reddit's search didn't surface it,"* not a guarantee
+it was never posted anywhere on the site.
