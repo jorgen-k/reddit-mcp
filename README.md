@@ -65,6 +65,32 @@ results in:
 
 Restart Claude Desktop to load it.
 
+### Cowork (remote / HTTP transport)
+
+Cowork doesn't load hand-edited `mcpServers` config and may run agents in a
+sandboxed VM, so it expects a connector reached over a **URL**. Run the server
+in HTTP mode and add it as a custom connector.
+
+1. Start the server (keep it running — unlike stdio, it isn't auto-spawned):
+   ```sh
+   uv run server.py --http
+   ```
+   It listens at `http://127.0.0.1:9090/mcp`. Override with `REDDIT_MCP_HOST`
+   / `REDDIT_MCP_PORT`.
+2. In Cowork, add a custom MCP connector pointing at that URL.
+
+> **If Cowork can't reach `127.0.0.1`** (its sandbox has its own localhost),
+> bind to all interfaces and use your machine's IP instead:
+> ```sh
+> REDDIT_MCP_HOST=0.0.0.0 uv run server.py --http
+> ```
+> then point Cowork at `http://<your-host-ip>:9090/mcp`.
+
+The same HTTP endpoint also works for Claude Code:
+```sh
+claude mcp add reddit-http --transport http http://127.0.0.1:9090/mcp
+```
+
 ## Notes
 
 - Read-only, public content only.
