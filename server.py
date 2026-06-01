@@ -31,11 +31,7 @@ ATOM = {"a": "http://www.w3.org/2005/Atom"}
 TIMEOUT = 30.0
 TEXT_MAX = 2000
 
-# Host/port only matter when run with --http (streamable-HTTP transport).
-HTTP_HOST = os.environ.get("REDDIT_MCP_HOST", "127.0.0.1")
-HTTP_PORT = int(os.environ.get("REDDIT_MCP_PORT", "9090"))
-
-mcp = FastMCP("reddit", host=HTTP_HOST, port=HTTP_PORT)
+mcp = FastMCP("reddit")
 
 
 # --------------------------------------------------------------------------- #
@@ -263,34 +259,8 @@ async def fetch_json(url: str) -> dict:
 
 
 def main() -> None:
-    """Run over stdio (default) or streamable-HTTP (with --http).
-
-    stdio   — for Claude Code / classic Claude Desktop (process spawned per client).
-    --http  — for Cowork and other clients that connect to a URL. Serves at
-              http://{HTTP_HOST}:{HTTP_PORT}/mcp (defaults 127.0.0.1:9090).
-    """
-    import sys
-
-    use_http = "--http" in sys.argv or os.environ.get("MCP_TRANSPORT") == "http"
-    if not use_http:
-        mcp.run()
-        return
-
-    certfile = os.environ.get("REDDIT_MCP_CERTFILE")
-    keyfile = os.environ.get("REDDIT_MCP_KEYFILE")
-    if certfile and keyfile:
-        # Serve streamable-HTTP over HTTPS (TLS terminated here).
-        import uvicorn
-
-        uvicorn.run(
-            mcp.streamable_http_app(),
-            host=HTTP_HOST,
-            port=HTTP_PORT,
-            ssl_certfile=certfile,
-            ssl_keyfile=keyfile,
-        )
-    else:
-        mcp.run(transport="streamable-http")
+    """Run the server over stdio (for Claude Code and Cowork plugins)."""
+    mcp.run()
 
 
 if __name__ == "__main__":

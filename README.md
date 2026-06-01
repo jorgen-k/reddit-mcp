@@ -87,20 +87,6 @@ plugin's `.mcp.json` and replace `"uv"` with the absolute path from `which uv`.
 >   -x ".venv/*" "__pycache__/*" "*.pyc" "uv.lock"
 > ```
 
-### Remote / hosted (optional)
-
-The server can also run over streamable-HTTP for a *publicly hosted* deployment
-(a Custom Connector can reach a real `https://` URL, just not `localhost`):
-
-```sh
-uv run server.py --http        # http://127.0.0.1:9090/mcp
-```
-
-Set `REDDIT_MCP_HOST` / `REDDIT_MCP_PORT` to change the bind address, and
-`REDDIT_MCP_CERTFILE` / `REDDIT_MCP_KEYFILE` to serve HTTPS directly. This is
-only useful if you expose it on a public host with a real certificate; for local
-use, prefer the plugin (Cowork) or stdio (Claude Code) above.
-
 ## Notes
 
 - Read-only, public content only.
