@@ -65,42 +65,41 @@ results in:
 
 Restart Claude Desktop to load it.
 
-### Cowork (HTTP transport)
+### Cowork (install the plugin)
 
-Cowork doesn't load hand-edited `mcpServers` config, so instead of a spawned
-stdio process it connects to a running server over a **URL**. Run the server in
-HTTP mode and add it as a custom connector.
+Cowork's **Custom Connectors are dialed from Anthropic's cloud**, so a
+`localhost` URL can never reach a server on your machine — no tunnel or cert
+fixes that. The supported way to run a *local* MCP server in Cowork is a
+**plugin** that runs on-device.
 
-1. **Start the server** in HTTP mode and leave it running (unlike stdio, it
-   isn't auto-spawned — it must already be up when Cowork connects):
-   ```sh
-   uv run server.py --http
-   ```
-   It listens at `http://127.0.0.1:9090/mcp`. (Override host/port with the
-   `REDDIT_MCP_HOST` / `REDDIT_MCP_PORT` env vars.)
+Install the prebuilt plugin:
 
-2. **Add the connector in Cowork** → add a custom MCP server by URL:
-   ```
-   http://127.0.0.1:9090/mcp
-   ```
-   The Reddit tools should then be available in your Cowork session.
+1. Grab **`reddit-mcp.plugin`** from this repo (it bundles the stdio server).
+2. Open it with Cowork / install it from Cowork's plugins UI and accept it.
 
-> **If the connector can't reach `127.0.0.1`** — some sandboxes have their own
-> `localhost` — bind to all interfaces and use your machine's LAN IP instead:
+`uv` must be installed and on your `PATH`. If Cowork can't find it, edit the
+plugin's `.mcp.json` and replace `"uv"` with the absolute path from `which uv`.
+
+> The plugin source lives in [`plugin/reddit-mcp/`](plugin/reddit-mcp/). Rebuild
+> the `.plugin` with:
 > ```sh
-> REDDIT_MCP_HOST=0.0.0.0 uv run server.py --http
+> cd plugin/reddit-mcp && zip -rq ../../reddit-mcp.plugin . \
+>   -x ".venv/*" "__pycache__/*" "*.pyc" "uv.lock"
 > ```
-> then point Cowork at `http://<your-machine-ip>:9090/mcp`.
 
-**Keeping it running:** the HTTP server only works while the process is alive.
-For occasional use, just run the command in a terminal you leave open. To have
-it always available, run it as a background service (e.g. a macOS `launchd`
-agent).
+### Remote / hosted (optional)
 
-The same HTTP endpoint also works for Claude Code:
+The server can also run over streamable-HTTP for a *publicly hosted* deployment
+(a Custom Connector can reach a real `https://` URL, just not `localhost`):
+
 ```sh
-claude mcp add reddit-http --transport http http://127.0.0.1:9090/mcp
+uv run server.py --http        # http://127.0.0.1:9090/mcp
 ```
+
+Set `REDDIT_MCP_HOST` / `REDDIT_MCP_PORT` to change the bind address, and
+`REDDIT_MCP_CERTFILE` / `REDDIT_MCP_KEYFILE` to serve HTTPS directly. This is
+only useful if you expose it on a public host with a real certificate; for local
+use, prefer the plugin (Cowork) or stdio (Claude Code) above.
 
 ## Notes
 
