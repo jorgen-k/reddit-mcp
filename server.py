@@ -198,7 +198,7 @@ async def browse_subreddit(
     sub = subreddit.strip().removeprefix("r/").strip("/")
     sort = sort.strip().lower()
     limit = max(1, min(int(limit), 100))
-    params = {"limit": limit}
+    params: dict[str, str | int] = {"limit": limit}
     if sort in ("top", "controversial"):
         params["t"] = time_filter
     title, entries = await _fetch_feed(f"{REDDIT_BASE}/r/{sub}/{sort}/.rss", params)
