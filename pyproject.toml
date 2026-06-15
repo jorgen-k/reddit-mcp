@@ -10,3 +10,11 @@ dependencies = [
 
 [project.scripts]
 reddit-mcp = "server:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
