@@ -15,9 +15,12 @@ JSON via the ``.json`` convention.
 
 from __future__ import annotations
 
+import asyncio
 import html
 import os
+import random
 import re
+import time
 import xml.etree.ElementTree as ET
 from urllib.parse import urlsplit, urlunsplit
 
@@ -31,7 +34,77 @@ ATOM = {"a": "http://www.w3.org/2005/Atom"}
 TIMEOUT = 30.0
 TEXT_MAX = 2000
 
+# Reddit throttles its unauthenticated RSS feeds aggressively. Retry 429s with
+# backoff (honoring Retry-After) and keep a global minimum gap between requests
+# rather than failing fast.
+MAX_RETRIES = 7  # retries after the first attempt: ~2,4,8,16,32,64,128s backoff
+BACKOFF_BASE = 2.0  # seconds; per-retry sleep is BACKOFF_BASE * 2**attempt + jitter
+MIN_INTERVAL = 1.0  # minimum seconds between outbound requests
+
 mcp = FastMCP("reddit")
+
+# Serialize the throttle so concurrent tool calls still respect MIN_INTERVAL.
+_throttle_lock = asyncio.Lock()
+_last_request_at = 0.0
+
+
+async def _throttle() -> None:
+    """Sleep so successive outbound requests are at least MIN_INTERVAL apart."""
+    global _last_request_at
+    if MIN_INTERVAL <= 0:
+        return
+    async with _throttle_lock:
+        wait = MIN_INTERVAL - (time.monotonic() - _last_request_at)
+        if wait > 0:
+            await asyncio.sleep(wait)
+        _last_request_at = time.monotonic()
+
+
+def _parse_retry_after(value: str | None) -> float | None:
+    """Reddit sends Retry-After as integer seconds; ignore the HTTP-date form."""
+    if not value:
+        return None
+    try:
+        return max(0.0, float(value))
+    except ValueError:
+        return None
+
+
+async def _get_with_retry(
+    client: httpx.AsyncClient, url: str, params: dict | None = None
+) -> httpx.Response:
+    """GET with throttling and 429 retry/backoff.
+
+    On a 429 we wait for the Retry-After header (if present) or an exponential
+    backoff with jitter, retrying up to MAX_RETRIES times. Only after exhausting
+    retries do we raise the rate-limited error, noting attempts and the last
+    Retry-After seen.
+    """
+    last_retry_after: float | None = None
+    for attempt in range(MAX_RETRIES + 1):
+        await _throttle()
+        resp = await client.get(url, params=params)
+        if resp.status_code != 429:
+            return resp
+        last_retry_after = _parse_retry_after(resp.headers.get("Retry-After"))
+        if attempt == MAX_RETRIES:
+            break
+        if last_retry_after is not None:
+            delay = last_retry_after
+        else:
+            delay = BACKOFF_BASE * (2**attempt) + random.random()
+        await asyncio.sleep(delay)
+
+    attempts = MAX_RETRIES + 1
+    suffix = (
+        f"; last Retry-After was {last_retry_after:g}s"
+        if last_retry_after is not None
+        else ""
+    )
+    raise RuntimeError(
+        f"Reddit rate-limited this request (HTTP 429) after {attempts} "
+        f"attempt(s){suffix}. Wait a bit and retry."
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -43,11 +116,7 @@ async def _fetch_feed(url: str, params: dict | None = None) -> tuple[str | None,
     async with httpx.AsyncClient(
         timeout=TIMEOUT, follow_redirects=True, headers=headers
     ) as client:
-        resp = await client.get(url, params=params)
-    if resp.status_code == 429:
-        raise RuntimeError(
-            "Reddit rate-limited this request (HTTP 429). Wait a bit and retry."
-        )
+        resp = await _get_with_retry(client, url, params)
     resp.raise_for_status()
     try:
         root = ET.fromstring(resp.content)
@@ -232,7 +301,7 @@ async def fetch_json(url: str) -> dict:
     async with httpx.AsyncClient(
         timeout=TIMEOUT, follow_redirects=True, headers={"User-Agent": USER_AGENT}
     ) as client:
-        resp = await client.get(url.strip())
+        resp = await _get_with_retry(client, url.strip())
         if resp.is_success:
             try:
                 return {"url": str(resp.url), "data": resp.json()}
@@ -244,7 +313,7 @@ async def fetch_json(url: str) -> dict:
             fallback = urlunsplit(
                 (parts.scheme, parts.netloc, path + ".json", parts.query, "")
             )
-            resp = await client.get(fallback)
+            resp = await _get_with_retry(client, fallback)
 
     resp.raise_for_status()
     try:

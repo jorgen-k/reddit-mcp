@@ -79,12 +79,33 @@ The Reddit tools then appear in the app.
 > no matter the cert or tunnel. The config-file method above spawns the server
 > locally on your machine, which is what works.
 
+### Updating after a code change
+
+The server runs as a long-lived process that's spawned once when the client
+connects. Editing `server.py` does **not** hot-reload it — the running process
+keeps the old code until it's restarted. After any change, restart the server so
+the new code takes effect:
+
+- **Claude Code:** run `/mcp`, select `reddit`, and reconnect it (or restart
+  Claude Code).
+- **Claude Desktop & Cowork:** fully quit the app (`Cmd+Q`) and relaunch.
+
 ## Notes
 
 - Read-only, public content only.
 - No scores/vote counts/comment counts (RSS limitation). For those you'd need
   Reddit's Data API, which now requires a moderation use case + approval.
 - Be considerate with request volume — these are public feeds.
+
+### Rate limiting
+
+Reddit throttles its unauthenticated RSS feeds aggressively. On an HTTP 429 the
+server transparently retries with backoff (honoring the `Retry-After` header
+when present, otherwise exponential backoff with jitter) and only surfaces an
+error after retries are exhausted. It also keeps a small minimum gap between
+outbound requests to avoid tripping the limit in the first place. All tools
+share this behavior. A 429 is retried up to 7 times, sleeping roughly
+2, 4, 8, 16, 32, 64, 128 seconds (plus jitter) between attempts.
 
 ### Search is only as good as Reddit's search
 
