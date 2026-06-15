@@ -28,14 +28,42 @@ endpoints), refining the responses down to the fields that matter.
 
 ## Install
 
-Clone it somewhere first:
+The quickest path is to run it straight from GitHub with `uvx` (no clone needed),
+and you can pin a release tag so you control upgrades. `uvx` fetches the repo and
+runs the `reddit-mcp` entry point.
+
+**Claude Code:**
+
+```sh
+claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp@v1.1.0 reddit-mcp
+```
+
+**Claude Desktop & Cowork** (add to `claude_desktop_config.json`; use the absolute
+path from `which uvx`, then follow the quit/relaunch steps below):
+
+```json
+{
+  "mcpServers": {
+    "reddit": {
+      "command": "/absolute/path/to/uvx",
+      "args": ["--from", "git+https://github.com/jorgen-k/reddit-mcp@v1.1.0", "reddit-mcp"]
+    }
+  }
+}
+```
+
+Drop the `@v1.1.0` to track the latest `main` instead of a pinned release.
+
+### From a local clone
+
+Prefer this if you want to edit the code. Clone it somewhere first:
 
 ```sh
 git clone https://github.com/jorgen-k/reddit-mcp.git
 cd reddit-mcp
 ```
 
-### Claude Code
+#### Claude Code
 
 ```sh
 claude mcp add reddit -s user -- uv --directory "$(pwd)" run server.py
@@ -44,7 +72,7 @@ claude mcp add reddit -s user -- uv --directory "$(pwd)" run server.py
 Verify with `claude mcp list` (should show `reddit: ✓ Connected`). If Claude
 can't find `uv`, use its absolute path (`which uv`) instead of bare `uv`.
 
-### Claude Desktop & Cowork
+#### Claude Desktop & Cowork
 
 Both use the same config file:
 `~/Library/Application Support/Claude/claude_desktop_config.json`. Add a
