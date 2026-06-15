@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jorgen-k/reddit-mcp",
+  "title": "Reddit (RSS)",
+  "description": "Fetch and refine Reddit content via public RSS feeds: browse subreddits, read posts and comments, and search. No authentication required.",
+  "repository": {
+    "url": "https://github.com/jorgen-k/reddit-mcp",
+    "source": "github"
+  },
+  "version": "1.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "reddit-rss-mcp",
+      "version": "1.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

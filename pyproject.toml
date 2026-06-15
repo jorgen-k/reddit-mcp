@@ -1,15 +1,40 @@
 [project]
-name = "reddit-mcp"
+name = "reddit-rss-mcp"
 version = "1.1.0"
-description = "Local MCP server that fetches and refines Reddit (and other JSON) content for Claude."
+description = "Local MCP server that fetches and refines Reddit (and other JSON) content for Claude, via Reddit's public RSS feeds (no auth)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
+authors = [{ name = "Jörgen Karlsson" }]
+keywords = ["mcp", "reddit", "rss", "claude", "model-context-protocol"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "mcp>=1.2.0",
     "httpx>=0.27",
 ]
 
+[project.urls]
+Homepage = "https://github.com/jorgen-k/reddit-mcp"
+Repository = "https://github.com/jorgen-k/reddit-mcp"
+Changelog = "https://github.com/jorgen-k/reddit-mcp/blob/main/CHANGELOG.md"
+
 [project.scripts]
-reddit-mcp = "server:main"
+reddit-rss-mcp = "server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["server.py"]
+
+[tool.hatch.build.targets.sdist]
+include = ["server.py", "README.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
 
 [dependency-groups]
 dev = [
