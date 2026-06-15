@@ -67,7 +67,7 @@ extension; add to `claude_desktop_config.json` using the absolute path from
 ### From GitHub (latest `main`, no clone)
 
 To run unreleased changes, point `uvx` at the repo and the `reddit-rss-mcp` entry
-point. Append `@v1.1.1` (or any tag) to pin a release instead of tracking `main`:
+point. Append `@v1.1.2` (or any tag) to pin a release instead of tracking `main`:
 
 ```sh
 claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp

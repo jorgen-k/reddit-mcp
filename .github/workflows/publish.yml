@@ -37,7 +37,7 @@ jobs:
         run: uv build
 
       - name: Publish to PyPI (trusted publishing)
-        run: uv publish
+        run: uv publish --check-url https://pypi.org/simple/
 
       - name: Install mcp-publisher
         run: |
