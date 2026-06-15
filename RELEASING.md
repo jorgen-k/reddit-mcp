@@ -52,6 +52,10 @@ created earlier.
 
 ## Notes
 
+- The workflow also packs the Claude Desktop extension from `extension/manifest.json`
+  and attaches `reddit-rss-mcp.mcpb` to the GitHub release. The manifest version is
+  set from the tag automatically, so it does not need a manual bump. The README's
+  one-click link points at `releases/latest/download/reddit-rss-mcp.mcpb`.
 - Ownership verification: the registry checks that the PyPI description (this
   repo's README) contains `<!-- mcp-name: io.github.jorgen-k/reddit-mcp -->`.
   Do not remove that marker.

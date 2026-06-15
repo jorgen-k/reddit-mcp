@@ -30,9 +30,13 @@ endpoints), refining the responses down to the fields that matter.
 
 ## Install
 
-The published package is [`reddit-rss-mcp`](https://pypi.org/project/reddit-rss-mcp/)
-on PyPI (the plain `reddit-mcp` name belongs to an unrelated project). `uvx`
-fetches and runs it for you, no clone needed.
+`reddit-rss-mcp` is published on PyPI (the plain `reddit-mcp` name belongs to an
+unrelated project). Three ways to install it, easiest first.
+
+### From PyPI (recommended)
+
+`uvx reddit-rss-mcp` fetches and runs the published package for you, no clone
+needed. This is the preferred install.
 
 **Claude Code:**
 
@@ -40,8 +44,14 @@ fetches and runs it for you, no clone needed.
 claude mcp add reddit -s user -- uvx reddit-rss-mcp
 ```
 
-**Claude Desktop & Cowork** (add to `claude_desktop_config.json`; use the absolute
-path from `which uvx`, then follow the quit/relaunch steps below):
+**Claude Desktop — one-click:** download `reddit-rss-mcp.mcpb` from the
+[latest release](https://github.com/jorgen-k/reddit-mcp/releases/latest) and drag
+it into **Settings → Extensions**. No JSON editing, no absolute paths. (It runs
+`uvx reddit-rss-mcp`, so it needs [`uv`](https://docs.astral.sh/uv/) on your PATH.)
+
+**Claude Desktop & Cowork — manual config** (fallback if you'd rather not use the
+extension; add to `claude_desktop_config.json` using the absolute path from
+`which uvx`, then follow the quit/relaunch steps below):
 
 ```json
 {
