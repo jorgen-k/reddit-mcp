@@ -1,0 +1,23 @@
+{
+  "manifest_version": "0.2",
+  "name": "reddit-rss-mcp",
+  "display_name": "Reddit (RSS)",
+  "version": "1.1.1",
+  "description": "Read Reddit via public RSS feeds: browse subreddits, posts, comments, and search. No authentication required.",
+  "author": {
+    "name": "Jörgen Karlsson"
+  },
+  "homepage": "https://github.com/jorgen-k/reddit-mcp",
+  "documentation": "https://github.com/jorgen-k/reddit-mcp#readme",
+  "license": "MIT",
+  "keywords": ["reddit", "rss", "mcp"],
+  "server": {
+    "type": "binary",
+    "entry_point": "uvx",
+    "mcp_config": {
+      "command": "uvx",
+      "args": ["reddit-rss-mcp"],
+      "env": {}
+    }
+  }
+}
