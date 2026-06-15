@@ -1,6 +1,6 @@
 [project]
 name = "reddit-rss-mcp"
-version = "1.1.0"
+version = "1.1.1"
 description = "Local MCP server that fetches and refines Reddit (and other JSON) content for Claude, via Reddit's public RSS feeds (no auth)."
 readme = "README.md"
 license = "MIT"
