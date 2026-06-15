@@ -57,7 +57,7 @@ path from `which uvx`, then follow the quit/relaunch steps below):
 ### From GitHub (latest `main`, no clone)
 
 To run unreleased changes, point `uvx` at the repo and the `reddit-rss-mcp` entry
-point. Append `@v1.1.0` (or any tag) to pin a release instead of tracking `main`:
+point. Append `@v1.1.1` (or any tag) to pin a release instead of tracking `main`:
 
 ```sh
 claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp
