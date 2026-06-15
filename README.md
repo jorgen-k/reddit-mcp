@@ -1,5 +1,7 @@
 # reddit-mcp
 
+<!-- mcp-name: io.github.jorgen-k/reddit-mcp -->
+
 A small **local MCP server** that lets Claude read Reddit (and other JSON
 endpoints), refining the responses down to the fields that matter.
 
@@ -28,14 +30,14 @@ endpoints), refining the responses down to the fields that matter.
 
 ## Install
 
-The quickest path is to run it straight from GitHub with `uvx` (no clone needed),
-and you can pin a release tag so you control upgrades. `uvx` fetches the repo and
-runs the `reddit-mcp` entry point.
+The published package is [`reddit-rss-mcp`](https://pypi.org/project/reddit-rss-mcp/)
+on PyPI (the plain `reddit-mcp` name belongs to an unrelated project). `uvx`
+fetches and runs it for you, no clone needed.
 
 **Claude Code:**
 
 ```sh
-claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp@v1.1.0 reddit-mcp
+claude mcp add reddit -s user -- uvx reddit-rss-mcp
 ```
 
 **Claude Desktop & Cowork** (add to `claude_desktop_config.json`; use the absolute
@@ -46,13 +48,20 @@ path from `which uvx`, then follow the quit/relaunch steps below):
   "mcpServers": {
     "reddit": {
       "command": "/absolute/path/to/uvx",
-      "args": ["--from", "git+https://github.com/jorgen-k/reddit-mcp@v1.1.0", "reddit-mcp"]
+      "args": ["reddit-rss-mcp"]
     }
   }
 }
 ```
 
-Drop the `@v1.1.0` to track the latest `main` instead of a pinned release.
+### From GitHub (latest `main`, no clone)
+
+To run unreleased changes, point `uvx` at the repo and the `reddit-rss-mcp` entry
+point. Append `@v1.1.0` (or any tag) to pin a release instead of tracking `main`:
+
+```sh
+claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp
+```
 
 ### From a local clone
 

@@ -4,3 +4,7 @@
 .venv/
 __pycache__/
 uv.lock
+dist/
+build/
+*.egg-info/
+.pytest_cache/
