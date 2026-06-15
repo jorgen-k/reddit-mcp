@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-06-15
+
+First published release. No functional code changes from 1.1.0.
+
+### Added
+
+- Published to PyPI as [`reddit-rss-mcp`](https://pypi.org/project/reddit-rss-mcp/)
+  and listed in the official MCP Registry as `io.github.jorgen-k/reddit-mcp`.
+- Automated release workflow: pushing a `v*` tag publishes to PyPI (trusted
+  publishing) and the MCP Registry via GitHub OIDC, with no stored secrets.
+
 ## [1.1.0] - 2026-06-15
 
 ### Added
