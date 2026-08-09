@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 # Feed readers send their own User-Agent; Reddit serves RSS to them normally.
 USER_AGENT = os.environ.get("REDDIT_USER_AGENT", "reddit-mcp/1.0 (personal RSS reader)")
