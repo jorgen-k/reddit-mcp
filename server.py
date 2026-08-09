@@ -264,7 +264,9 @@ async def search_reddit(
         limit: Number of results (1-100).
     """
     limit = max(1, min(int(limit), 100))
-    params = {"q": query, "sort": sort, "t": time_filter, "limit": limit}
+    # The search feed mixes subreddit matches (t5) in with posts, so ask for a
+    # few extra entries to still return `limit` posts after filtering them out.
+    params = {"q": query, "sort": sort, "t": time_filter, "limit": min(100, limit + 5)}
     if subreddit:
         sub = subreddit.strip().removeprefix("r/").strip("/")
         params["restrict_sr"] = "1"
@@ -272,7 +274,8 @@ async def search_reddit(
     else:
         url = f"{REDDIT_BASE}/search.rss"
     title, entries = await _fetch_feed(url, params)
-    return {"query": query, "count": len(entries), "results": entries}
+    posts = [e for e in entries if e["type"] == "post"][:limit]
+    return {"query": query, "count": len(posts), "results": posts}
 
 
 @mcp.tool()
