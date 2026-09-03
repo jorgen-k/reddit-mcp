@@ -365,7 +365,7 @@ async def fetch_json(url: str) -> dict:
 
 
 def main() -> None:
-    """Run the server over stdio (for Claude Code and Cowork plugins)."""
+    """Run the server over stdio for MCP clients."""
     mcp.run()
 
 

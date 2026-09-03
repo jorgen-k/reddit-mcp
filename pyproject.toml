@@ -1,13 +1,13 @@
 [project]
 name = "reddit-rss-mcp"
 version = "1.1.4"
-description = "Read Reddit from Claude with no API key, no app registration and no OAuth. A local MCP server over Reddit's public RSS feeds."
+description = "Read Reddit from local MCP-compatible clients, including Claude Code and Codex, with no API key, app registration or OAuth. A stdio MCP server over Reddit's public RSS feeds."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [{ name = "Jörgen Karlsson" }]
-keywords = ["mcp", "reddit", "rss", "claude", "model-context-protocol"]
+keywords = ["mcp", "reddit", "rss", "claude", "codex", "model-context-protocol"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

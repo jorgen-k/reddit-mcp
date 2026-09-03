@@ -2,7 +2,7 @@
 
 <!-- mcp-name: io.github.jorgen-k/reddit-mcp -->
 
-**Read Reddit from Claude without an API key.** No app registration, no account.
+**Read Reddit from local MCP-compatible clients, including Claude Code and Codex, without an API key.** No app registration, no account.
 
 Reddit's data API is effectively closed. New apps need a stated moderation use
 case and manual approval, anonymous `.json` access is blocked, and the free tier
@@ -10,7 +10,7 @@ that third-party tools were built on is gone. Most "Reddit for LLMs" integration
 now start with a credentials dance you can't complete.
 
 Reddit still publishes public Atom/RSS feeds for every subreddit, thread, user and
-search. This is a small local MCP server that reads those feeds and hands Claude
+search. This is a small local MCP server that reads those feeds and hands your compatible client
 the fields that matter: browse a subreddit, read a thread and its comments, search
 across the site.
 
@@ -36,6 +36,22 @@ claude mcp add reddit -s user -- uvx reddit-rss-mcp
 
 Verify with `claude mcp list` (should show `reddit: ✓ Connected`). If Claude can't
 find `uvx`, use its absolute path (`which uvx`) instead of the bare command.
+
+**Codex CLI:**
+
+```sh
+codex mcp add reddit -- uvx reddit-rss-mcp
+```
+
+Verify with `codex mcp list`. To use a local checkout instead, run:
+
+```sh
+codex mcp add reddit -- uv --directory "$(pwd)" run server.py
+```
+
+Codex also supports a project-scoped `.codex/config.toml`, but this repository
+does not include one because it would configure and launch the server
+automatically for every trusted checkout.
 
 **Claude Desktop, one click:** download `reddit-rss-mcp.mcpb` from the
 [latest release](https://github.com/jorgen-k/reddit-mcp/releases/latest) and drag it
@@ -81,7 +97,7 @@ rather than overwriting the file. Then:
 
 `fetch_json` is deliberately not a general web fetcher. URLs on other hosts are
 refused unless you start the server with `REDDIT_MCP_ALLOW_ANY_URL=1`, so an
-unrelated fetch tool doesn't sit in Claude's tool list waiting to be picked at the
+unrelated fetch tool doesn't sit in the client's tool list waiting to be picked at the
 wrong moment.
 
 ## Other ways to install
@@ -127,6 +143,7 @@ it's restarted.
 
 - **Claude Code:** run `/mcp`, select `reddit`, and reconnect it (or restart Claude
   Code).
+- **Codex CLI:** run `/mcp` and restart the server if needed.
 - **Claude Desktop & Cowork:** fully quit the app (`Cmd+Q`) and relaunch.
 
 ## Limits worth knowing
