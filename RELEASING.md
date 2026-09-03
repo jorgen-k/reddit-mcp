@@ -31,31 +31,45 @@ created earlier.
 
 ## Each release
 
-1. **Bump the version in two files (keep them identical):**
-   - `pyproject.toml` → `version`
-   - `server.json` → top-level `version`
+The tag is the only place the version is written by hand. The workflow injects it
+into `pyproject.toml`, `server.json` (both the top-level field and
+`packages[0].version`) and `extension/manifest.json` at build time, so there is
+nothing to bump and nothing to keep in sync.
 
-   Update `CHANGELOG.md`. (The workflow fails fast if the tag, `pyproject.toml`,
-   and `server.json` versions disagree.)
+1. **Write the `CHANGELOG.md` section** for the new version, heading
+   `## [X.Y.Z] - YYYY-MM-DD`. It becomes the GitHub release notes verbatim, so
+   an empty or missing section shows up there.
 
 2. **Commit, tag, push:**
    ```sh
-   git commit -am "release: X.Y.Z"
+   git commit -am "docs: changelog for X.Y.Z"
    git tag -a vX.Y.Z -m "reddit-mcp X.Y.Z"
    git push origin main --follow-tags
    ```
 
 3. **Watch the run** under the repo's Actions tab. On success:
    ```sh
-   curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.jorgen-k/reddit-mcp"
+   curl "https://registry.modelcontextprotocol.io/v0/servers?search=io.github.jorgen-k/reddit-mcp"
    ```
+
+The committed version fields are therefore expected to lag behind the latest
+release. That is deliberate: the tag is the source of truth. Do not "fix" them.
+
+The tag pattern is `v[0-9]+.[0-9]+.[0-9]+`, so a stray tag like `vNext` no longer
+triggers a publish.
 
 ## Notes
 
 - The workflow also packs the Claude Desktop extension from `extension/manifest.json`
-  and attaches `reddit-rss-mcp.mcpb` to the GitHub release. The manifest version is
-  set from the tag automatically, so it does not need a manual bump. The README's
-  one-click link points at `releases/latest/download/reddit-rss-mcp.mcpb`.
+  and attaches `reddit-rss-mcp.mcpb` to the GitHub release. The README's one-click
+  link points at `releases/latest/download/reddit-rss-mcp.mcpb`.
+- `.github/workflows/test.yml` runs the tests on every push and PR, and weekly on
+  a schedule. Because `uv.lock` is gitignored, every run resolves dependencies
+  fresh, so the weekly run is what catches a breaking upstream release before it
+  reaches a release attempt.
+- `.github/dependabot.yml` raises the dependency caps in `pyproject.toml` and the
+  action versions in the workflows, weekly. Keep the caps: an unbounded
+  `mcp>=1.2.0` is how the 2.x SDK silently broke 1.1.2 for every fresh install.
 - Ownership verification: the registry checks that the PyPI description (this
   repo's README) contains `<!-- mcp-name: io.github.jorgen-k/reddit-mcp -->`.
   Do not remove that marker.

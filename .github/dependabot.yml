@@ -1,0 +1,25 @@
+# Nothing else watches for upstream releases here: uv.lock is gitignored, so CI
+# and users resolve fresh every time. An unbounded `mcp>=1.2.0` is how the 2.x
+# SDK silently broke 1.1.2. Dependabot raises the caps deliberately, and the
+# Tests workflow says whether the new version actually works.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "fix"
+    groups:
+      python-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
