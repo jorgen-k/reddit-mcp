@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local MCP server that fetches and refines Reddit (and other JSON) content.
+"""Local MCP server that reads Reddit through its public RSS feeds.
 
 Reddit gates its Data API (new apps require a moderation use case + approval)
 and blocks anonymous ``.json`` access, but it still publishes public **Atom/RSS
@@ -9,8 +9,8 @@ useful fields. No authentication, account, or app registration required.
 Feeds carry title, author, link, timestamp, and full post/comment text — but
 NOT scores, upvote ratios, or comment counts (those only exist in the gated API).
 
-The generic ``fetch_json`` tool also works for non-Reddit services that expose
-JSON via the ``.json`` convention.
+``fetch_json`` covers the remaining Reddit feed shapes (user, multireddit,
+domain). It refuses other hosts unless REDDIT_MCP_ALLOW_ANY_URL=1 is set.
 """
 
 from __future__ import annotations
@@ -175,6 +175,16 @@ def _is_reddit_host(netloc: str) -> bool:
     return host == "reddit.com" or host.endswith(".reddit.com")
 
 
+def _allow_any_url() -> bool:
+    """Whether the operator has opted in to fetching non-Reddit hosts."""
+    return os.environ.get("REDDIT_MCP_ALLOW_ANY_URL", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Tools
 # --------------------------------------------------------------------------- #
@@ -185,9 +195,13 @@ async def browse_subreddit(
     time_filter: str = "day",
     limit: int = 25,
 ) -> dict:
-    """List posts from a subreddit (via its public RSS feed).
+    """Read what a subreddit is posting right now, to see a community's live activity.
 
-    Note: RSS does not include scores, upvote ratios, or comment counts.
+    Use this when the question is about what people in a specific community are
+    currently saying or doing, or when a post is too recent for Reddit's search
+    index to have caught it yet (search lags; "new" here does not).
+
+    Scores, upvote ratios, and comment counts are not available.
 
     Args:
         subreddit: Subreddit name, with or without the "r/" prefix.
@@ -213,10 +227,14 @@ async def browse_subreddit(
 
 @mcp.tool()
 async def get_post(url: str, comment_limit: int = 50) -> dict:
-    """Fetch a single post and its comments (via the post's RSS feed).
+    """Read one Reddit thread in full: the original post plus its comments.
 
-    Comments come back as a flat list (RSS doesn't expose the reply tree), and
-    scores/vote counts are not available.
+    Use this after a search or a browse turns up a promising thread and you need
+    what people actually wrote in it, the details, caveats, corrections, and
+    disagreements that a title alone never carries.
+
+    Comments come back as a flat list (the reply tree is not available), and
+    neither are scores or vote counts.
 
     Args:
         url: A Reddit post URL or permalink (e.g.
@@ -252,9 +270,15 @@ async def search_reddit(
     time_filter: str = "all",
     limit: int = 25,
 ) -> dict:
-    """Search Reddit, optionally scoped to a subreddit (via the search RSS feed).
+    """Search Reddit discussions for real user opinions and experiences on a topic.
 
-    Note: RSS results do not include scores or comment counts.
+    Use this when the answer depends on what people who actually used or did the
+    thing report: hands-on impressions, "is X worth it", failure stories,
+    workarounds, recommendations, or where a community currently stands. Returns
+    matching posts and their text; follow up with get_post to read the comments.
+
+    Reddit's own search covers post titles and bodies, not comment text, so no
+    results means Reddit did not surface it, not that nobody posted it.
 
     Args:
         query: Search terms.
@@ -277,15 +301,18 @@ async def search_reddit(
 
 @mcp.tool()
 async def fetch_json(url: str) -> dict:
-    """Fetch a URL as structured data.
+    """Read a Reddit feed the other tools do not cover: a user, multireddit, or domain.
 
-    For Reddit URLs (any feed type — user, domain, multireddit, etc.) this
-    fetches the ``.rss`` feed and returns refined entries. For other services it
-    tries the URL as-is, falling back to the ``.json`` convention if the plain
-    response isn't JSON.
+    Use this only for Reddit URLs outside the usual shapes, such as
+    /user/<name>, /r/<a>+<b>, or /domain/<site>. For browsing a subreddit,
+    searching, or reading a thread, use browse_subreddit, search_reddit, or
+    get_post instead.
+
+    This is not a general web fetcher. URLs on other hosts are refused unless
+    the operator sets REDDIT_MCP_ALLOW_ANY_URL=1.
 
     Args:
-        url: The URL to fetch.
+        url: A reddit.com URL.
     """
     parts = urlsplit(url.strip())
 
@@ -297,7 +324,14 @@ async def fetch_json(url: str) -> dict:
         title, entries = await _fetch_feed(target)
         return {"url": target, "feed_title": title, "count": len(entries), "entries": entries}
 
-    # Non-Reddit: try the URL as given, then fall back to the .json convention.
+    if not _allow_any_url():
+        raise ValueError(
+            f"{parts.netloc or url!s} is not a Reddit host, and this server only "
+            "reads Reddit. To fetch other hosts, restart it with "
+            "REDDIT_MCP_ALLOW_ANY_URL=1."
+        )
+
+    # Opted in: try the URL as given, then fall back to the .json convention.
     async with httpx.AsyncClient(
         timeout=TIMEOUT, follow_redirects=True, headers={"User-Agent": USER_AGENT}
     ) as client:

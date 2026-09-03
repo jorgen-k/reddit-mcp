@@ -1,7 +1,7 @@
 [project]
 name = "reddit-rss-mcp"
 version = "1.1.2"
-description = "Local MCP server that fetches and refines Reddit (and other JSON) content for Claude, via Reddit's public RSS feeds (no auth)."
+description = "Read Reddit from Claude with no API key, no app registration and no OAuth. A local MCP server over Reddit's public RSS feeds."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
