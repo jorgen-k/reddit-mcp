@@ -1,0 +1,35 @@
+name: Tests
+
+# Runs on every push and PR so a breaking dependency release or a bad commit is
+# caught here, not halfway through a release you were trying to ship.
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  schedule:
+    # Weekly, so an upstream release that breaks us surfaces even when nobody
+    # has pushed. Dependencies resolve fresh; there is no committed lockfile.
+    - cron: "0 6 * * 1"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+      - name: Run tests
+        run: uv run --python ${{ matrix.python-version }} --group dev pytest -q
+      - name: Server starts and registers its tools
+        run: |
+          uv run --python ${{ matrix.python-version }} python -c "
+          import asyncio, server
+          names = sorted(t.name for t in asyncio.run(server.mcp.list_tools()))
+          assert names == ['browse_subreddit', 'fetch_json', 'get_post', 'search_reddit'], names
+          print('tools ok:', names)
+          "
