@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   covers the Reddit feed shapes the other tools don't (`/user/<name>`,
   multireddits, `/domain/<site>`) and refuses other hosts unless
   `REDDIT_MCP_ALLOW_ANY_URL=1` is set. The three Reddit tools are unaffected.
+- Pinned `mcp<2`. The MCP Python SDK 2.x renamed `FastMCP` to `MCPServer`, so the
+  unbounded `mcp>=1.2.0` in 1.1.2 resolves to a version this server cannot import.
+  A fresh install of 1.1.2 fails at startup with `ModuleNotFoundError: No module
+  named 'mcp.server.fastmcp'`.
 
 ## [1.1.2] - 2026-06-15
 
