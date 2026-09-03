@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3]
+
+### Fixed
+
+- `fetch_json` accepted URLs on any host, which was never the intent. It now
+  covers the Reddit feed shapes the other tools don't (`/user/<name>`,
+  multireddits, `/domain/<site>`) and refuses other hosts unless
+  `REDDIT_MCP_ALLOW_ANY_URL=1` is set. The three Reddit tools are unaffected.
+
 ## [1.1.2] - 2026-06-15
 
 ### Added
