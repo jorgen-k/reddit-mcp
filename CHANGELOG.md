@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4]
+
+### Changed
+
+- Migrated to MCP Python SDK 2.x. `FastMCP` was renamed to `MCPServer`, so
+  `server.py` now imports `MCPServer` from `mcp.server.mcpserver`. The tool
+  decorator and stdio transport are unchanged, so client configuration and the
+  four tools behave exactly as before.
+
+### Fixed
+
+- Dependencies are now pinned below the next major (`mcp>=2.1,<3`,
+  `httpx>=0.27,<1`) instead of tracking the latest release. The unbounded
+  `mcp>=1.2.0` in 1.1.2 silently resolved to the 2.x SDK, which this server
+  could not import; 1.1.3 capped it at `<2` as an emergency fix and this
+  release moves forward properly.
+
 ## [1.1.3]
 
 ### Fixed
