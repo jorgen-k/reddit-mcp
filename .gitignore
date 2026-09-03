@@ -8,3 +8,7 @@ dist/
 build/
 *.egg-info/
 .pytest_cache/
+
+# Local only, not for publication
+CLAUDE.md
+docs/announcement-post.md
