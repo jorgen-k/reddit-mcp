@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-09-03
+
+### Fixed
+
+- `search_reddit` returned subreddit matches alongside posts. Reddit's search
+  feed mixes `t5` (subreddit) entries in with `t3` (post) entries, and those
+  arrived with a null author, subreddit and timestamp, and the community's
+  sidebar blurb as their text. They also counted against `limit`, so a search
+  for six results could return four posts and two subreddits. Results are now
+  filtered to posts, and the feed is asked for a few extra entries so `limit`
+  posts still come back. Thanks to @volkanncicek (#4).
+
 ## [1.1.4]
 
 ### Changed
