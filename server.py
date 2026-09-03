@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 # Feed readers send their own User-Agent; Reddit serves RSS to them normally.
 USER_AGENT = os.environ.get("REDDIT_USER_AGENT", "reddit-mcp/1.0 (personal RSS reader)")
@@ -41,7 +41,7 @@ MAX_RETRIES = 7  # retries after the first attempt: ~2,4,8,16,32,64,128s backoff
 BACKOFF_BASE = 2.0  # seconds; per-retry sleep is BACKOFF_BASE * 2**attempt + jitter
 MIN_INTERVAL = 1.0  # minimum seconds between outbound requests
 
-mcp = FastMCP("reddit")
+mcp = MCPServer("reddit")
 
 # Serialize the throttle so concurrent tool calls still respect MIN_INTERVAL.
 _throttle_lock = asyncio.Lock()
