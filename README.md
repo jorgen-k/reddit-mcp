@@ -2,7 +2,7 @@
 
 <!-- mcp-name: io.github.jorgen-k/reddit-mcp -->
 
-**Read Reddit from local MCP-compatible clients, including Claude Code and Codex, without an API key.** No app registration, no account.
+**Read Reddit from local MCP-compatible clients, including Claude Code, Codex, and ChatGPT Desktop, without an API key.** No app registration, no account.
 
 Reddit's data API is effectively closed. New apps need a stated moderation use
 case and manual approval, anonymous `.json` access is blocked, and the free tier
@@ -10,8 +10,8 @@ that third-party tools were built on is gone. Most "Reddit for LLMs" integration
 now start with a credentials dance you can't complete.
 
 Reddit still publishes public Atom/RSS feeds for every subreddit, thread, user and
-search. This is a small local MCP server that reads those feeds and hands your compatible client
-the fields that matter: browse a subreddit, read a thread and its comments, search
+search. This small local MCP server makes those feeds available as tools to
+compatible clients: browse a subreddit, read a thread and its comments, search
 across the site.
 
 Those feeds are published to be fetched, which is why this keeps working. It reads a
@@ -31,10 +31,10 @@ Python and dependencies itself, and there is nothing else to set up.
 **Claude Code:**
 
 ```sh
-claude mcp add reddit -s user -- uvx reddit-rss-mcp
+claude mcp add reddit --scope user -- uvx reddit-rss-mcp
 ```
 
-Verify with `claude mcp list` (should show `reddit: ✓ Connected`). If Claude can't
+Verify with `claude mcp get reddit` or `claude mcp list`. If Claude Code cannot
 find `uvx`, use its absolute path (`which uvx`) instead of the bare command.
 
 **Codex CLI:**
@@ -53,12 +53,21 @@ Codex also supports a project-scoped `.codex/config.toml`, but this repository
 does not include one because it would configure and launch the server
 automatically for every trusted checkout.
 
-**Claude Desktop, one click:** download `reddit-rss-mcp.mcpb` from the
-[latest release](https://github.com/jorgen-k/reddit-mcp/releases/latest) and drag it
-into **Settings → Extensions**. No JSON editing, no absolute paths. (It runs
-`uvx reddit-rss-mcp`, so `uv` still needs to be on your PATH.)
+**ChatGPT Desktop:** it shares MCP configuration with Codex, so the Codex command
+above also installs Reddit for ChatGPT Desktop. Restart the ChatGPT app, then use
+`/mcp` to see the connected server. You can also add it in **Settings → MCP
+servers → Add server**, choose **STDIO**, and enter `uvx reddit-rss-mcp`.
 
-**Claude Desktop & Cowork, manual config:** add this to
+**ChatGPT Work on the web:** it does not read your local MCP configuration. It
+uses plugins and their remote MCP tools instead.
+
+**Claude Desktop, one click:** download `reddit-rss-mcp.mcpb` from the
+[latest release](https://github.com/jorgen-k/reddit-mcp/releases/latest), then
+double-click it, drag it into Claude Desktop, or choose **Settings → Extensions →
+Advanced settings → Install Extension**. No JSON editing or absolute paths. (It
+runs `uvx reddit-rss-mcp`, so `uv` still needs to be on your PATH.)
+
+**Claude Desktop, manual local-server configuration:** add this to
 `~/Library/Application Support/Claude/claude_desktop_config.json`, using the
 absolute path from `which uvx` (the app doesn't inherit your shell `PATH`):
 
@@ -81,10 +90,9 @@ rather than overwriting the file. Then:
 2. **Relaunch.** It may take a couple of restarts before the server registers.
 3. **Grant permission** when the app prompts to run the server.
 
-> **Don't use a Custom Connector** (the "add server by URL" option) for a local
-> server. Those are dialed from Anthropic's cloud and can't reach `localhost`, no
-> matter the cert or tunnel. The config-file method above spawns the server on your
-> own machine, which is what works.
+**Cowork:** install the `.mcpb` bundle above through Claude Desktop Extensions.
+Cowork does not load local servers from `claude_desktop_config.json`, so use the
+bundle rather than the manual configuration.
 
 ## Tools
 
@@ -105,10 +113,11 @@ wrong moment.
 ### From GitHub (latest `main`, no clone)
 
 To run unreleased changes, point `uvx` at the repo and the `reddit-rss-mcp` entry
-point. Append `@v1.1.2` (or any tag) to pin a release instead of tracking `main`:
+point. Append `@vX.Y.Z` (or any tag) to pin a release instead of tracking `main`:
 
 ```sh
-claude mcp add reddit -s user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp
+claude mcp add reddit --scope user -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp
+codex mcp add reddit -- uvx --from git+https://github.com/jorgen-k/reddit-mcp reddit-rss-mcp
 ```
 
 ### From a local clone
@@ -118,11 +127,12 @@ Prefer this if you want to edit the code:
 ```sh
 git clone https://github.com/jorgen-k/reddit-mcp.git
 cd reddit-mcp
-claude mcp add reddit -s user -- uv --directory "$(pwd)" run server.py
+claude mcp add reddit --scope user -- uv --directory "$(pwd)" run server.py
+codex mcp add reddit -- uv --directory "$(pwd)" run server.py
 ```
 
-For Claude Desktop & Cowork, the same config file as above, with absolute paths
-from `which uv` and `pwd`:
+For Claude Desktop, use the same config file as above, with absolute paths from
+`which uv` and `pwd`:
 
 ```json
 {
@@ -143,8 +153,11 @@ it's restarted.
 
 - **Claude Code:** run `/mcp`, select `reddit`, and reconnect it (or restart Claude
   Code).
-- **Codex CLI:** run `/mcp` and restart the server if needed.
-- **Claude Desktop & Cowork:** fully quit the app (`Cmd+Q`) and relaunch.
+- **Codex CLI:** start a new Codex session. Use `codex mcp list` to confirm the
+  configured server.
+- **ChatGPT Desktop:** select **Restart** in **Settings → MCP servers**, or quit
+  and relaunch the app.
+- **Claude Desktop or Cowork:** fully quit the app (`Cmd+Q`) and relaunch.
 
 ## Limits worth knowing
 
