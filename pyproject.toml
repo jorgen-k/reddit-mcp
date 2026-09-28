@@ -14,8 +14,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "mcp>=2.1,<3",
-    "httpx>=0.27,<1",
+    "mcp>=2.1.1,<3",
+    "httpx>=0.28.1,<1",
 ]
 
 [project.urls]
@@ -38,7 +38,7 @@ include = ["server.py", "README.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"
 
 [dependency-groups]
 dev = [
-    "pytest>=8",
+    "pytest>=9.1.1",
 ]
 
 [tool.pytest.ini_options]
