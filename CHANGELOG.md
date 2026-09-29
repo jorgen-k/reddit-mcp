@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-09-28
+
+### Fixed
+
+- `server.json`'s description exceeded the MCP Registry's 100-character limit,
+  which failed registry publishing for 1.2.0 with a 422 (PyPI publishing had
+  already succeeded, so 1.2.0 exists on PyPI but never reached the registry or
+  a GitHub release). Shortened the description.
+
 ## [1.2.0] - 2026-09-03
 
 ### Added
