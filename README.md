@@ -110,6 +110,18 @@ wrong moment.
 
 ## Other ways to install
 
+### As a plugin
+
+The `plugin/` directory is a plugin in the format Claude Code, Codex and RK share: it
+runs `uvx reddit-rss-mcp`, the latest release. It is in a subdirectory rather than at the
+repository root so that opening this repository in Claude Code does not offer to start the
+server. RK lists it in its built-in marketplace; any marketplace can list it with a
+`git-subdir` source:
+
+```json
+{ "name": "reddit", "source": { "source": "git-subdir", "url": "jorgen-k/reddit-mcp", "path": "plugin" } }
+```
+
 ### From GitHub (latest `main`, no clone)
 
 To run unreleased changes, point `uvx` at the repo and the `reddit-rss-mcp` entry
