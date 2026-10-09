@@ -2,7 +2,7 @@
   "mcpServers": {
     "reddit": {
       "command": "uvx",
-      "args": ["reddit-rss-mcp"]
+      "args": ["reddit-rss-mcp==1.2.1"]
     }
   }
 }
