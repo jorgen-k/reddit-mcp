@@ -1,0 +1,6 @@
+{
+  "name": "reddit",
+  "description": "Read Reddit: browse subreddits, read threads and comments, and search, with no API key.",
+  "repository": "https://github.com/jorgen-k/reddit-mcp",
+  "license": "MIT"
+}
