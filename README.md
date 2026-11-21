@@ -2,6 +2,11 @@
 
 <!-- mcp-name: io.github.jorgen-k/reddit-mcp -->
 
+> **Not working right now.** Reddit [ended support for RSS feeds on 13 November 2026](https://techcrunch.com/2026/09/30/reddit-is-killing-rss-feeds-ending-public-api-access-because-of-ai-bots/),
+> and this server is built entirely on them, so every tool currently fails. I am
+> looking for other ways to solve this. Progress is tracked in the issue tracker.
+> The description below is how the server worked before the shutdown.
+
 **Read Reddit from local MCP-compatible clients, including Claude Code, Codex, and ChatGPT Desktop, without an API key.** No app registration, no account.
 
 Reddit's data API is effectively closed. New apps need a stated moderation use
