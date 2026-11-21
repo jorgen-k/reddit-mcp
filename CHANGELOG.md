@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-11-21
+
+### Changed
+
+- The README now states that the server does not work at the moment: Reddit ended
+  support for RSS feeds on 13 November 2026, which every tool here relies on.
+  Other ways to solve this are being looked into.
+
 ### Added
 
 - A `plugin/` directory that makes the server installable as a plugin from a
